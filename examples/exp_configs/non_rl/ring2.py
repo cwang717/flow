@@ -3,6 +3,7 @@
 This example consists of 22 IDM cars on a ring creating shockwaves.
 """
 
+from flow.envs.ring.wave_attenuation import WaveAttenuationEnv, WaveAttenuationPOEnv
 from flow.controllers import IDMController, ContinuousRouter, TrainedSingleRingController
 from flow.core.params import SumoParams, EnvParams, InitialConfig, NetParams
 from flow.core.params import VehicleParams, SumoCarFollowingParams
@@ -25,7 +26,8 @@ vehicles.add(
     veh_id="trained",
     acceleration_controller=(TrainedSingleRingController, {}),
     car_following_params=SumoCarFollowingParams(
-        min_gap=0
+        min_gap=0,
+        speed_mode="all_checks"
     ),
     routing_controller=(ContinuousRouter, {}),
     num_vehicles=1)
@@ -37,7 +39,7 @@ flow_params = dict(
     exp_tag='ring',
 
     # name of the flow environment the experiment is running on
-    env_name=AccelEnv,
+    env_name=WaveAttenuationEnv,
 
     # name of the network class the experiment is running on
     network=RingNetwork,
@@ -55,7 +57,12 @@ flow_params = dict(
     env=EnvParams(
         horizon=3000,
         warmup_steps=750,
-        additional_params=ADDITIONAL_ENV_PARAMS,
+        #additional_params=ADDITIONAL_ENV_PARAMS,
+        additional_params={
+            "max_accel": 1,
+            "max_decel": 1,
+            "ring_length": [220, 270],
+        },
     ),
 
     # network-related parameters (see flow.core.params.NetParams and the

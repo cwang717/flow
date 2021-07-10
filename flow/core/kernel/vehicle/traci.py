@@ -616,6 +616,12 @@ class TraCIVehicle(KernelVehicle):
             return [self.get_headway(vehID, error) for vehID in veh_id]
         return self.__vehicles.get(veh_id, {}).get("headway", error)
 
+    def get_follower_headway(self, veh_id, error=-1001):
+        """See parent class."""
+        if isinstance(veh_id, (list, np.ndarray)):
+            return [self.get_follower_headway(vehID, error) for vehID in veh_id]
+        return self.__vehicles.get(veh_id, {}).get("follower_headway", error)
+
     def get_last_lc(self, veh_id, error=-1001):
         """See parent class."""
         if isinstance(veh_id, (list, np.ndarray)):

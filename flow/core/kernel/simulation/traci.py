@@ -152,7 +152,8 @@ class TraCISimulation(KernelSimulation):
 
     def check_collision(self):
         """See parent class."""
-        return self.kernel_api.simulation.getStartingTeleportNumber() != 0
+        #return self.kernel_api.simulation.getStartingTeleportNumber() != 0
+        return self.kernel_api.simulation.getCollidingVehiclesNumber() != 0
 
     def start_simulation(self, network, sim_params):
         """Start a sumo simulation instance.
@@ -189,7 +190,9 @@ class TraCISimulation(KernelSimulation):
                     sumo_binary, "-c", network.cfg,
                     "--remote-port", str(sim_params.port),
                     "--num-clients", str(sim_params.num_clients),
-                    "--step-length", str(sim_params.sim_step)
+                    "--step-length", str(sim_params.sim_step),
+                    "--emergencydecel.warning-threshold", "100",
+                    "--collision.action", "warn"
                 ]
 
                 # use a ballistic integration step (if request)
@@ -204,6 +207,10 @@ class TraCISimulation(KernelSimulation):
                 if sim_params.lateral_resolution is not None:
                     sumo_call.append("--lateral-resolution")
                     sumo_call.append(str(sim_params.lateral_resolution))
+
+                if sim_params.minigap_factor is not None:
+                    sumo_call.append("--collision.mingap-factor")
+                    sumo_call.append(str(sim_params.minigap_factor))
 
                 if sim_params.overtake_right:
                     sumo_call.append("--lanechange.overtake-right")
@@ -224,7 +231,7 @@ class TraCISimulation(KernelSimulation):
 
                 # check collisions at intersections
                 sumo_call.append("--collision.check-junctions")
-                sumo_call.append("true")
+                sumo_call.append("false")
 
                 logging.info(" Starting SUMO on port " + str(port))
                 logging.debug(" Cfg file: " + str(network.cfg))

@@ -262,7 +262,8 @@ class VehicleParams:
             num_vehicles=0,
             car_following_params=None,
             lane_change_params=None,
-            color=None):
+            color=None,
+            vClass="passenger"):
         """Add a sequence of vehicles to the list of vehicles in the network.
 
         Parameters
@@ -311,11 +312,14 @@ class VehicleParams:
              "routing_controller": routing_controller,
              "initial_speed": initial_speed,
              "car_following_params": car_following_params,
-             "lane_change_params": lane_change_params}
+             "lane_change_params": lane_change_params,
+             "vClass": vClass}
 
         if color:
             type_params['color'] = color
             self.type_parameters[veh_id]['color'] = color
+
+        type_params["vClass"] = vClass
 
         # TODO: delete?
         self.initial.append({
@@ -609,7 +613,8 @@ class SumoParams(SimParams):
                  teleport_time=-1,
                  num_clients=1,
                  color_by_speed=False,
-                 use_ballistic=False):
+                 use_ballistic=False,
+                 minigap_factor=1):
         """Instantiate SumoParams."""
         super(SumoParams, self).__init__(
             sim_step, render, restart_instance, emission_path, save_render,
@@ -624,6 +629,7 @@ class SumoParams(SimParams):
         self.num_clients = num_clients
         self.color_by_speed = color_by_speed
         self.use_ballistic = use_ballistic
+        self.minigap_factor = minigap_factor
 
 
 class EnvParams:

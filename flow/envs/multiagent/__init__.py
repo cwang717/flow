@@ -5,6 +5,8 @@ from flow.envs.multiagent.ring.wave_attenuation import \
     MultiWaveAttenuationPOEnv
 from flow.envs.multiagent.ring.wave_attenuation import \
     MultiAgentWaveAttenuationPOEnv
+from flow.envs.multiagent.ring.disguised_attack import \
+    MultiAgentDisguisedAttackPOEnv
 from flow.envs.multiagent.ring.accel import AdversarialAccelEnv
 from flow.envs.multiagent.ring.accel import MultiAgentAccelPOEnv
 from flow.envs.multiagent.traffic_light_grid import MultiTrafficLightGridPOEnv

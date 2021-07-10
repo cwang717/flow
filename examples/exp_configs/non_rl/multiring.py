@@ -4,7 +4,7 @@ This example consists of 22 IDM cars on a ring creating shockwaves.
 """
 
 from flow.controllers import IDMController, ContinuousRouter, TrainedSingleRingController
-from flow.core.params import SumoParams, EnvParams, InitialConfig, NetParams
+from flow.core.params import SumoLaneChangeParams, SumoParams, EnvParams, InitialConfig, NetParams
 from flow.core.params import VehicleParams, SumoCarFollowingParams
 from flow.envs.ring.accel import AccelEnv, ADDITIONAL_ENV_PARAMS
 from flow.networks.ring import RingNetwork, ADDITIONAL_NET_PARAMS
@@ -20,15 +20,18 @@ vehicles.add(
         min_gap=0
     ),
     routing_controller=(ContinuousRouter, {}),
-    num_vehicles=21)
-vehicles.add(
-    veh_id="trained",
-    acceleration_controller=(TrainedSingleRingController, {}),
-    car_following_params=SumoCarFollowingParams(
-        min_gap=0
+    lane_change_params=SumoLaneChangeParams(
+        lane_change_mode="no_lc_safe",
     ),
-    routing_controller=(ContinuousRouter, {}),
-    num_vehicles=1)
+    num_vehicles=44)
+# vehicles.add(
+#     veh_id="trained",
+#     acceleration_controller=(TrainedSingleRingController, {}),
+#     car_following_params=SumoCarFollowingParams(
+#         min_gap=0
+#     ),
+#     routing_controller=(ContinuousRouter, {}),
+#     num_vehicles=1)
 
 
 
@@ -66,7 +69,7 @@ flow_params = dict(
     net=NetParams(
         additional_params={
             "length": 260,
-            "lanes": 1,
+            "lanes": 2,
             "speed_limit": 30,
             "resolution": 40,
         }, ),

@@ -76,6 +76,7 @@ class TraCIKernelNetwork(BaseKernelNetwork):
         self._edges = None
         self._connections = None
         self._edge_list = None
+        self._edge_type_dict = None
         self._junction_list = None
         self.__max_speed = None
         self.__length = None  # total length
@@ -444,10 +445,23 @@ class TraCIKernelNetwork(BaseKernelNetwork):
                 edge['speed'] = str(edge['speed'])
 
         # xml file for edges
+        types_dict = {item["id"]: item for item in types}
         x = makexml('edges', 'http://sumo.dlr.de/xsd/edges_file.xsd')
         for edge_attributes in edges:
             x.append(E('edge', attrib=edge_attributes))
+            if "type" in edge_attributes and ("zeroLanes" in types_dict[edge_attributes["type"]]):
+                type_attributes = types_dict[edge_attributes["type"]]
+                for i in range(int(type_attributes["numLanes"])):
+                    if i < int(type_attributes["numLanes"])-type_attributes["zeroLanes"]:
+                        x[-1].append(E('lane', {"index": str(i), "allow": "all"}))
+                    else:
+                        x[-1].append(E('lane', {"index": str(i), "allow": "hov"}))
         printxml(x, self.net_path + self.edgfn)
+        
+        # x = makexml('edges', 'http://sumo.dlr.de/xsd/edges_file.xsd')
+        # for edge_attributes in edges:
+        #     x.append(E('edge', attrib=edge_attributes))
+        # printxml(x, self.net_path + self.edgfn)
 
         # xml file for types: contains the the number of lanes and the speed
         # limit for the lanes
@@ -461,8 +475,14 @@ class TraCIKernelNetwork(BaseKernelNetwork):
 
             x = makexml('types', 'http://sumo.dlr.de/xsd/types_file.xsd')
             for type_attributes in types:
-                x.append(E('type', **type_attributes))
+                if "numLanes" in type_attributes.keys():
+                    x.append(E('type', {k: type_attributes[k] for k in ["id", "numLanes", "speed"]}))
+                else:
+                    x.append(E('type', **type_attributes))
             printxml(x, self.net_path + self.typfn)
+
+        if types is not None:
+            self._edge_type_dict = {edge["id"]: edge["type"] for edge in edges}
 
         # xml for connections: specifies which lanes connect to which in the
         # edges
@@ -509,7 +529,8 @@ class TraCIKernelNetwork(BaseKernelNetwork):
             [
                 'netconvert -c ' + self.net_path + self.cfgfn +
                 ' --output-file=' + self.cfg_path + self.netfn +
-                ' --no-internal-links="false"'
+                ' --no-internal-links="false"' +
+                ' --no-warnings="true"'
             ],
             stdout=subprocess.DEVNULL,
             shell=True)
@@ -931,3 +952,10 @@ class TraCIKernelNetwork(BaseKernelNetwork):
         connection_data = {'next': next_conn_data, 'prev': prev_conn_data}
 
         return net_data, connection_data
+    
+    def get_edge_type(self, edge_id):
+        try:
+            return self._edge_type_dict[edge_id]
+        except KeyError:
+            print('Error in edge type with key', edge_id)
+            return -1001

@@ -9,9 +9,9 @@ import numpy as np
 
 ADDITIONAL_ENV_PARAMS = {
     # maximum acceleration for autonomous vehicles, in m/s^2
-    'max_accel': 3,
+    'max_accel': 1,
     # maximum deceleration for autonomous vehicles, in m/s^2
-    'max_decel': 3,
+    'max_decel': 1,
     # desired velocity for all vehicles in the network, in m/s
     'target_velocity': 10,
     # specifies whether vehicles are to be sorted by position during a

@@ -10,6 +10,13 @@ from flow.envs.ring.lane_change_accel import LaneChangeAccelEnv, \
 from flow.envs.ring.accel import AccelEnv
 from flow.envs.ring.wave_attenuation import WaveAttenuationEnv, \
     WaveAttenuationPOEnv
+from flow.envs.ring.disguised_attack import DisguisedAttackEnv, \
+    DisguisedAttackPOEnv
+from flow.envs.ring.disguised_attack_acc import DisguisedAttackACCEnv, \
+    DisguisedAttackACCPOEnv
+from flow.envs.minicity import MinicityPOEnv
+from flow.envs.minicity_attack import MinicityAttackPOEnv
+from flow.envs.minicity_attack_3obs import MinicityAttackPOEnv_three
 from flow.envs.merge import MergePOEnv
 from flow.envs.test import TestEnv
 
@@ -31,6 +38,8 @@ __all__ = [
     'BottleneckAccelEnv',
     'WaveAttenuationEnv',
     'WaveAttenuationPOEnv',
+    'DisguisedAttackEnv',
+    'DisguisedAttackPOEnv',
     'TrafficLightGridEnv',
     'TrafficLightGridPOEnv',
     'TrafficLightGridBenchmarkEnv',

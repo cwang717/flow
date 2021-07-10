@@ -7,6 +7,7 @@ Usage
     python train.py EXP_CONFIG
 """
 import argparse
+from flow.controllers.car_following_models import TrainedSingleRingController
 import json
 import os
 import sys
@@ -15,8 +16,10 @@ from copy import deepcopy
 
 from flow.core.util import ensure_dir
 from flow.utils.registry import env_constructor
-from flow.utils.rllib import FlowParamsEncoder, get_flow_params
+from flow.utils.rllib import FlowParamsEncoder, get_flow_params, get_rllib_config, get_rllib_pkl
 from flow.utils.registry import make_create_env
+from ray.rllib.agents import ppo
+import tensorflow as tf
 
 
 def parse_args(args):
@@ -182,10 +185,23 @@ def setup_exps_rllib(flow_params,
     if policies_to_train is not None:
         config['multiagent'].update({'policies_to_train': policies_to_train})
 
+
+
+    # ########################
+    # # restore tensorflow policy
+    # ########################
+    # sess = tf.Session()
+    # new_saver = tf.train.import_meta_graph('/home/cwang717/tensorflow/model.meta')
+    # new_saver.restore(sess, tf.train.latest_checkpoint('/home/cwang717/tensorflow/'))
+
+    # (flow_params["veh"].type_parameters["trained"])["acceleration_controller"] = (TrainedSingleRingController, {"agent": sess})
+
+
     create_env, gym_name = make_create_env(params=flow_params)
 
     # Register as rllib env
     register_env(gym_name, create_env)
+
     return alg_run, gym_name, config
 
 
@@ -205,7 +221,8 @@ def train_rllib(submodule, flags):
         flow_params, n_cpus, n_rollouts, flags,
         policy_graphs, policy_mapping_fn, policies_to_train)
 
-    ray.init(num_cpus=n_cpus + 1, object_store_memory=200 * 1024 * 1024)
+    ray.init(num_cpus=n_cpus+1, object_store_memory=200 * 1024 * 1024)
+
     #ray.init()
     exp_config = {
         "run": alg_run,
@@ -227,6 +244,8 @@ def train_rllib(submodule, flags):
         flags.exp_config + "-" + flow_params["exp_tag"] + "-vf-" \
             + str(config["vf_clip_param"]): exp_config
         })
+    
+    # sess.close()
 
 
 def train_h_baselines(env_name, args, multiagent):
