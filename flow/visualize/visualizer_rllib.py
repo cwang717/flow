@@ -153,7 +153,7 @@ def visualizer_rllib(args):
     checkpoint = result_dir + '/checkpoint_' + args.checkpoint_num
     checkpoint = checkpoint + '/checkpoint-' + args.checkpoint_num
     agent.restore(checkpoint)
-    agent.export_policy_checkpoint("/home/cwang717/tensorflow/single_minicity")
+    # agent.export_policy_checkpoint("/home/cwang717/tensorflow/single_ring_attacker")
 
     if hasattr(agent, "local_evaluator") and \
             os.environ.get("TEST_FLAG") != 'True':

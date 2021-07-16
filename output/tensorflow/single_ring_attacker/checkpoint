@@ -1,0 +1,2 @@
+model_checkpoint_path: "/home/cwang717/tensorflow/single_ring_attacker/model"
+all_model_checkpoint_paths: "/home/cwang717/tensorflow/single_ring_attacker/model"

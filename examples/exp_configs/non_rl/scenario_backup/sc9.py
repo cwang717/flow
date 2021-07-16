@@ -21,7 +21,7 @@ vehicles.add(
         min_gap=0
     ),
     routing_controller=(ContinuousRouter, {}),
-    num_vehicles=16)
+    num_vehicles=42)
 vehicles.add(
     veh_id="good",
     acceleration_controller=(TrainedSingleRingController, {}),
@@ -40,7 +40,7 @@ vehicles.add(
         speed_mode="all_checks"
     ),
     routing_controller=(ContinuousRouter, {}),
-    num_vehicles=5,
+    num_vehicles=1,
     color="red")
 
 
@@ -61,7 +61,7 @@ flow_params = dict(
     sim=SumoParams(
         render=True,
         sim_step=0.1,
-        emission_path="/home/cwang717/git/flow/output/scenario_5"
+        emission_path="/home/cwang717/git/flow/output/scenario_9"
     ),
 
     # environment related parameters (see flow.core.params.EnvParams)
@@ -72,7 +72,7 @@ flow_params = dict(
         additional_params={
             "max_accel": 1,
             "max_decel": 1,
-            "ring_length": [220, 220],
+            "ring_length": [440, 440],
         },
     ),
 

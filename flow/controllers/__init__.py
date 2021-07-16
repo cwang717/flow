@@ -15,7 +15,8 @@ from flow.controllers.base_controller import BaseController
 from flow.controllers.car_following_models import CFMController, \
     BCMController, OVMController, LinearOVM, IDMController, \
     SimCarFollowingController, LACController, GippsController, \
-    BandoFTLController, TrainedSingleRingController, TrainedMinicityController
+    BandoFTLController, TrainedSingleRingController, TrainedMinicityController, \
+    TrainedRingAttackerController
 from flow.controllers.velocity_controllers import FollowerStopper, \
     PISaturation, NonLocalFollowerStopper
 

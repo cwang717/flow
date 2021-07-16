@@ -207,10 +207,12 @@ class TraCISimulation(KernelSimulation):
                 if sim_params.lateral_resolution is not None:
                     sumo_call.append("--lateral-resolution")
                     sumo_call.append(str(sim_params.lateral_resolution))
-
-                if sim_params.minigap_factor is not None:
-                    sumo_call.append("--collision.mingap-factor")
-                    sumo_call.append(str(sim_params.minigap_factor))
+                try:
+                    if sim_params.minigap_factor is not None:
+                        sumo_call.append("--collision.mingap-factor")
+                        sumo_call.append(str(sim_params.minigap_factor))
+                except AttributeError:
+                    pass
 
                 if sim_params.overtake_right:
                     sumo_call.append("--lanechange.overtake-right")

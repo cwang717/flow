@@ -741,8 +741,8 @@ class TrainedSingleRingController(BaseController):
              env.k.vehicle.get_speed(self.veh_id))
         next_deltaV = current_deltaV + 0.1*(leader_acc-desired_acc)
         next_deltaX = current_deltaX + 0.1*next_deltaV
-        #print(next_deltaX)
-        if next_deltaX<0.2: 
+        # print(next_deltaX)
+        if next_deltaX<5.5: 
             self.idm.veh_id = self.veh_id
             return self.idm.get_accel(env)
         else:
@@ -782,6 +782,79 @@ class TrainedMinicityController(BaseController):
         self.sess = tf.Session()
         new_saver = tf.train.import_meta_graph('/home/cwang717/tensorflow/single_minicity/model.meta')
         new_saver.restore(self.sess, tf.train.latest_checkpoint('/home/cwang717/tensorflow/single_minicity/'))
+        self.obs = self.sess.graph.get_tensor_by_name("default_policy/observation:0")
+        self.act = self.sess.graph.get_tensor_by_name("default_policy/add:0")
+
+        self.idm = IDMController("idm_ref", car_following_params=SumoCarFollowingParams())
+        
+    def get_accel(self, env):
+        
+        lead_id = env.k.vehicle.get_leader(self.veh_id) or self.veh_id
+        
+        max_speed = 15.
+        max_length = env.k.network.length()
+        
+        state = [[
+            env.k.vehicle.get_speed(self.veh_id) / max_speed,
+            (env.k.vehicle.get_speed(lead_id) -
+             env.k.vehicle.get_speed(self.veh_id)) / max_speed,
+            (env.k.vehicle.get_x_by_id(lead_id) -
+             env.k.vehicle.get_x_by_id(self.veh_id)) % env.k.network.length()
+            / max_length
+        ]]
+        
+        desired_acc = self.sess.run(self.act, {self.obs: state})[0][0]
+        
+        self.idm.veh_id = lead_id
+        leader_acc = self.idm.get_accel(env)
+
+        current_deltaX = (env.k.vehicle.get_x_by_id(lead_id) -
+             env.k.vehicle.get_x_by_id(self.veh_id)) % env.k.network.length()
+        current_deltaV = (env.k.vehicle.get_speed(lead_id) -
+             env.k.vehicle.get_speed(self.veh_id))
+        next_deltaV = current_deltaV + 0.1*(leader_acc-desired_acc)
+        next_deltaX = current_deltaX + 0.1*next_deltaV
+        #print(next_deltaX)
+        if next_deltaX<0.2: 
+            self.idm.veh_id = self.veh_id
+            return self.idm.get_accel(env)
+        else:
+            return desired_acc
+        
+
+    def __del__(self):
+        # import tensorflow as tf
+        
+        # tf.reset_default_graph()
+        del self.idm
+        del self.obs
+        del self.act
+        self.sess.close()
+        del self.sess
+
+class TrainedRingAttackerController(BaseController):
+    def __init__(self,
+                 veh_id, 
+                 car_following_params,
+                 delay=0, 
+                 fail_safe=None, 
+                 display_warnings=True, 
+                 noise=0):
+
+        super().__init__(veh_id, 
+                         car_following_params, 
+                         delay=delay, 
+                         fail_safe=fail_safe, 
+                         display_warnings=display_warnings, 
+                         noise=noise)
+        import tensorflow as tf
+        from flow.core.params import SumoCarFollowingParams
+
+        
+        tf.reset_default_graph()
+        self.sess = tf.Session()
+        new_saver = tf.train.import_meta_graph('/home/cwang717/tensorflow/single_ring_attacker/model.meta')
+        new_saver.restore(self.sess, tf.train.latest_checkpoint('/home/cwang717/tensorflow/single_ring_attacker/'))
         self.obs = self.sess.graph.get_tensor_by_name("default_policy/observation:0")
         self.act = self.sess.graph.get_tensor_by_name("default_policy/add:0")
 

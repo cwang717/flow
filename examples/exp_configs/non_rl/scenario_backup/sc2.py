@@ -21,17 +21,17 @@ vehicles.add(
         min_gap=0
     ),
     routing_controller=(ContinuousRouter, {}),
-    num_vehicles=16)
-vehicles.add(
-    veh_id="good",
-    acceleration_controller=(TrainedSingleRingController, {}),
-    car_following_params=SumoCarFollowingParams(
-        min_gap=0,
-        speed_mode="all_checks"
-    ),
-    routing_controller=(ContinuousRouter, {}),
-    num_vehicles=1,
-    color="green")
+    num_vehicles=21)
+# vehicles.add(
+#     veh_id="good",
+#     acceleration_controller=(TrainedSingleRingController, {}),
+#     car_following_params=SumoCarFollowingParams(
+#         min_gap=0,
+#         speed_mode="all_checks"
+#     ),
+#     routing_controller=(ContinuousRouter, {}),
+#     num_vehicles=1,
+#     color="green")
 vehicles.add(
     veh_id="attacker",
     acceleration_controller=(TrainedRingAttackerController, {}),
@@ -40,7 +40,7 @@ vehicles.add(
         speed_mode="all_checks"
     ),
     routing_controller=(ContinuousRouter, {}),
-    num_vehicles=5,
+    num_vehicles=1,
     color="red")
 
 
@@ -61,7 +61,7 @@ flow_params = dict(
     sim=SumoParams(
         render=True,
         sim_step=0.1,
-        emission_path="/home/cwang717/git/flow/output/scenario_5"
+        emission_path="/home/cwang717/git/flow/output/scenario_2"
     ),
 
     # environment related parameters (see flow.core.params.EnvParams)
