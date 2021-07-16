@@ -94,6 +94,7 @@ ENV/
 # Don't add xml/csv/png
 *.xml
 *.csv
+!scenario_setting.csv
 *.png
 .DS_Store
 
