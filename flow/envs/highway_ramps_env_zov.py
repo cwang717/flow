@@ -5,7 +5,7 @@ from flow.envs.base import Env
 
 import numpy as np
 
-class HighwayRampsEnv(AccelEnv):
+class HighwayRampsZOVEnv(AccelEnv):
 
     def __init__(self, env_params, sim_params, network, simulator='traci'):
         super().__init__(env_params, sim_params, network, simulator)
@@ -44,6 +44,57 @@ class HighwayRampsEnv(AccelEnv):
         for veh_id in self.k.vehicle.get_ids():
             if veh_id in self.previous_lane.keys() and self.previous_lane[veh_id] != self.k.vehicle.get_lane(veh_id):
                 lane_change_counter += 1
+            
+            #################################################### comment it for hov case and mixed case
+            # car following change related to zov lanes 
+            if self.k.vehicle.get_type(veh_id) == "special_cav" and self.k.network.network.zero_lanes == 1:
+                if self.k.vehicle.get_lane(veh_id) != 3:
+                    # change to cav params
+                    self.k.vehicle.set_accel(veh_id, 2)
+                    self.k.vehicle.set_decel(veh_id, 3.5)
+                    self.k.vehicle.set_leaderDecel(veh_id, 3.5)
+                    self.k.vehicle.set_tau(veh_id, 1.5)
+                    self.k.vehicle.set_sigma(veh_id, 0.1)
+                    # self.k.vehicle.set_min_gap(veh_id, 0)
+                    self.k.vehicle.set_max_speed(veh_id, 31)
+                    # ### test
+                    # self.k.vehicle.set_accel(veh_id, 2)
+                    # self.k.vehicle.set_decel(veh_id, 3.5)
+                    # self.k.vehicle.set_tau(veh_id, 2)
+                    # self.k.vehicle.set_sigma(veh_id, 0.5)
+                    # self.k.vehicle.set_min_gap(veh_id, 1.5)
+                    # self.k.vehicle.set_max_speed(veh_id, 31)
+                elif self.k.vehicle.get_lane(veh_id) == 3:
+                    # change to cav_zero params
+                    self.k.vehicle.set_accel(veh_id, 7.6)
+                    self.k.vehicle.set_decel(veh_id, 8)
+                    self.k.vehicle.set_leaderDecel(veh_id, 8)
+                    self.k.vehicle.set_sigma(veh_id, 0.1)
+                    self.k.vehicle.set_tau(veh_id, 1)
+                    # self.k.vehicle.set_min_gap(veh_id, 1)
+                    self.k.vehicle.set_max_speed(veh_id, 40)
+                # #### test
+                #     self.k.vehicle.set_accel(veh_id, 2)
+                #     self.k.vehicle.set_decel(veh_id, 3.5)
+                #     self.k.vehicle.set_tau(veh_id, 2)
+                #     self.k.vehicle.set_sigma(veh_id, 0.5)
+                #     #self.k.vehicle.set_min_gap(veh_id, 1.5)
+                #     self.k.vehicle.set_max_speed(veh_id, 31)    
+                else: 
+                    pass
+                
+            #########################################
+
+            if self.k.vehicle.get_type(veh_id) == "special_cav":
+                if self.k.vehicle.get_lane(veh_id) == 0:
+                    self.k.vehicle.set_accel(veh_id, 2)
+                    self.k.vehicle.set_decel(veh_id, 3.5)
+                    self.k.vehicle.set_leaderDecel(veh_id, 3.5)
+                    self.k.vehicle.set_tau(veh_id, 1.5)
+                    self.k.vehicle.set_sigma(veh_id, 0.1)
+                    # self.k.vehicle.set_min_gap(veh_id, 0)
+                    self.k.vehicle.set_max_speed(veh_id, 31)
+            #########################################
 
             if self.k.vehicle.get_edge(veh_id)[:7] == "highway" and self.k.vehicle.get_lane(veh_id) == 3:
                 num_zov += 1
@@ -162,8 +213,8 @@ class HighwayRampsEnv(AccelEnv):
 
             # crash encodes whether the simulator experienced a collision
             # crash = self.k.simulation.check_collision()
-            crash=False
-
+            crash = False
+            
             # stop collecting new simulation steps if there is a collision
             if crash:
                 break

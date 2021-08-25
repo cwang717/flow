@@ -34,18 +34,27 @@ vehicles.add(
 vehicles.add(
     veh_id="cav_zero",
     # acceleration_controller=(LACController, {}),
+    # car_following_params=SumoCarFollowingParams(
+    #     speed_mode="obey_safe_speed",  # for safer behavior at the merges
+    #     tau=0.5,  # larger distance between cars
+    #     accel=3, 
+    #     decel=6,
+    #     sigma=0.1,
+    #     min_gap=1.5, 
+    #     max_speed=36,
+    # ),
     car_following_params=SumoCarFollowingParams(
-        speed_mode="obey_safe_speed",  # for safer behavior at the merges
-        tau=0.5,  # larger distance between cars
-        accel=3, 
-        decel=6,
+        speed_mode="no_collide",  # for safer behavior at the merges
+        tau=0.8,  # larger distance between cars
+        decel=4.5,
         sigma=0.1,
-        min_gap=1.5, 
-        max_speed=36,
+        min_gap=2,
+        max_speed=31
     ),
     lane_change_params=SumoLaneChangeParams(
         lane_change_mode=1621,
-        lc_speed_gain=3),
+        # lc_speed_gain=3
+        ),
     vClass="hov",
     color = "red"
 )
@@ -68,7 +77,7 @@ vehicles.add(
 
 
 additional_net_params = ADDITIONAL_NET_PARAMS.copy()
-additional_net_params["next_off_ramp_proba"] = 0.05
+additional_net_params["next_off_ramp_proba"] = 0.1
 
 ON_RAMPS_INFLOW_RATE = TOTAL_FLOW_RATE * additional_net_params["next_off_ramp_proba"]
 HIGHWAY_INFLOW_RATE = TOTAL_FLOW_RATE - ON_RAMPS_INFLOW_RATE
@@ -92,11 +101,8 @@ additional_net_params["off_ramps_speed"] = 20
 additional_net_params["on_ramps_pos"] = [500, 3000, 5500]
 additional_net_params["off_ramps_pos"] = [2500, 5000, 7500]
 
-# probability of exiting at the next off-ramp
-additional_net_params["next_off_ramp_proba"] = 0.1
-
 # zero-occupancy lane
-additional_net_params["zero_lanes"] = 1
+additional_net_params["zero_lanes"] = 0
 assert additional_net_params["zero_lanes"]<additional_net_params["highway_lanes"]
 additional_net_params["highway_zero_car_following"] = dict()
 for i in range(additional_net_params["highway_lanes"]):
@@ -174,7 +180,7 @@ flow_params = dict(
     # sumo-related parameters (see flow.core.params.SumoParams)
     sim=SumoParams(
         render=True,
-        emission_path="/home/cwang717/git/flow/output/crystal/sc06",
+        emission_path="/home/cwang717/git/flow/output/crystal/sc13",
         sim_step=0.1,
         restart_instance=True,
         minigap_factor = 0

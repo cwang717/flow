@@ -66,6 +66,7 @@ class TraCISimulation(KernelSimulation):
         self.emission_path = None
         self.time = 0
         self.stored_data = dict()
+        self.crystal_data = dict()
 
     def pass_api(self, kernel_api):
         """See parent class.
@@ -142,6 +143,17 @@ class TraCISimulation(KernelSimulation):
                     "distance": kv.get_distance(veh_id),
                 })
 
+            for info in ["num_lane_change", "num_zov_on_zov_lane", "throughput", "special_lane_throughput"]:
+                t = round(self.time, 2)
+                if info not in self.crystal_data.keys():
+                    self.crystal_data[info] = dict()
+                if t not in self.crystal_data[info].keys():
+                    self.crystal_data[info][t] = dict()
+                
+                self.crystal_data[info][t].update({
+                    "value": kv.for_crystal[info]
+                })
+                
     def close(self):
         """See parent class."""
         # Save the emission data to a csv.
@@ -192,7 +204,7 @@ class TraCISimulation(KernelSimulation):
                     "--num-clients", str(sim_params.num_clients),
                     "--step-length", str(sim_params.sim_step),
                     "--emergencydecel.warning-threshold", "100",
-                    "--collision.action", "warn"
+                    "--collision.action", "teleport"
                 ]
 
                 # use a ballistic integration step (if request)
@@ -294,6 +306,8 @@ class TraCISimulation(KernelSimulation):
         # Get a csv name for the emission file.
         name = "{}-{}_emission.csv".format(
             self.master_kernel.network.network.name, run_id)
+        crystal_name = "{}-{}_crystal.csv".format(
+            self.master_kernel.network.network.name, run_id)
 
         # The name of all stored data-points (excluding id and time)
         stored_ids = [
@@ -319,6 +333,9 @@ class TraCISimulation(KernelSimulation):
         # Update the stored data to push to the csv file.
         final_data = {"time": [], "id": []}
         final_data.update({key: [] for key in stored_ids})
+        
+        final_crystal_data = {"time": [], "info": []}
+        final_crystal_data.update({"value": []})
 
         for veh_id in self.stored_data.keys():
             for t in self.stored_data[veh_id].keys():
@@ -326,6 +343,12 @@ class TraCISimulation(KernelSimulation):
                 final_data['id'].append(veh_id)
                 for key in stored_ids:
                     final_data[key].append(self.stored_data[veh_id][t][key])
+        
+        for info in self.crystal_data.keys():
+            for t in self.crystal_data[info].keys():
+                final_crystal_data['time'].append(t)
+                final_crystal_data['info'].append(info)
+                final_crystal_data["value"].append(self.crystal_data[info][t]["value"])
 
         with open(os.path.join(self.emission_path, name), "w") as f:
             print(os.path.join(self.emission_path, name), self.emission_path)
@@ -333,6 +356,13 @@ class TraCISimulation(KernelSimulation):
             writer.writerow(final_data.keys())
             writer.writerows(zip(*final_data.values()))
 
+        with open(os.path.join(self.emission_path, crystal_name), "w") as f:
+            print(os.path.join(self.emission_path, crystal_name), self.emission_path)
+            writer = csv.writer(f, delimiter=',')
+            writer.writerow(final_crystal_data.keys())
+            writer.writerows(zip(*final_crystal_data.values()))
+
         # Clear all memory from the stored data. This is useful if this
         # function is called in between resets.
         self.stored_data.clear()
+        self.crystal_data.clear()

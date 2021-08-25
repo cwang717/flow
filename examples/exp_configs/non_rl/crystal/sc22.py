@@ -14,8 +14,8 @@ from flow.networks import HighwayRampsNetwork_Crystal
 # inflow rates in vehs/hour
 TOTAL_FLOW_RATE = 15000
 
-CAV_RATE = 0.2
-ZERO_RATE = 0.2
+CAV_RATE = 0.8
+ZERO_RATE = 0.9
 
 vehicles = VehicleParams()
 vehicles.add(
@@ -68,7 +68,7 @@ vehicles.add(
 
 
 additional_net_params = ADDITIONAL_NET_PARAMS.copy()
-additional_net_params["next_off_ramp_proba"] = 0.05
+additional_net_params["next_off_ramp_proba"] = 0.3
 
 ON_RAMPS_INFLOW_RATE = TOTAL_FLOW_RATE * additional_net_params["next_off_ramp_proba"]
 HIGHWAY_INFLOW_RATE = TOTAL_FLOW_RATE - ON_RAMPS_INFLOW_RATE
@@ -91,9 +91,6 @@ additional_net_params["off_ramps_speed"] = 20
 # ramps
 additional_net_params["on_ramps_pos"] = [500, 3000, 5500]
 additional_net_params["off_ramps_pos"] = [2500, 5000, 7500]
-
-# probability of exiting at the next off-ramp
-additional_net_params["next_off_ramp_proba"] = 0.1
 
 # zero-occupancy lane
 additional_net_params["zero_lanes"] = 1
@@ -174,7 +171,7 @@ flow_params = dict(
     # sumo-related parameters (see flow.core.params.SumoParams)
     sim=SumoParams(
         render=True,
-        emission_path="/home/cwang717/git/flow/output/crystal/sc06",
+        emission_path="/home/cwang717/git/flow/output/crystal/sc22",
         sim_step=0.1,
         restart_instance=True,
         minigap_factor = 0

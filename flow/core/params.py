@@ -263,7 +263,8 @@ class VehicleParams:
             car_following_params=None,
             lane_change_params=None,
             color=None,
-            vClass="passenger"):
+            vClass="passenger",
+            reaction_time = 1):
         """Add a sequence of vehicles to the list of vehicles in the network.
 
         Parameters
@@ -313,7 +314,8 @@ class VehicleParams:
              "initial_speed": initial_speed,
              "car_following_params": car_following_params,
              "lane_change_params": lane_change_params,
-             "vClass": vClass}
+             "vClass": vClass,
+             "actionStepLength": reaction_time}
 
         if color:
             type_params['color'] = color

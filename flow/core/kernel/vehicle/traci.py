@@ -88,6 +88,13 @@ class TraCIVehicle(KernelVehicle):
         # old speeds used to compute accelerations
         self.previous_speeds = {}
 
+        self.for_crystal = {
+            "num_lane_change": 0,
+            "num_zov_on_zov_lane": 0,
+            "special_lane_throughput": 0,
+            "throughput": 0}
+
+
     def initialize(self, vehicles):
         """Initialize vehicle state information.
 
@@ -387,6 +394,8 @@ class TraCIVehicle(KernelVehicle):
     def reset(self):
         """See parent class."""
         self.previous_speeds = {}
+
+        self.for_crystal["num_lane_change"] = 0
 
     def remove(self, veh_id):
         """See parent class."""
@@ -1134,6 +1143,20 @@ class TraCIVehicle(KernelVehicle):
     def set_max_speed(self, veh_id, max_speed):
         """See parent class."""
         self.kernel_api.vehicle.setMaxSpeed(veh_id, max_speed)
+    def set_accel(self, veh_id, accel):
+        self.kernel_api.vehicle.setAccel(veh_id, accel)
+    def set_decel(self, veh_id, decel):
+        self.kernel_api.vehicle.setDecel(veh_id, decel)
+    def set_tau(self, veh_id, tau):
+        self.kernel_api.vehicle.setTau(veh_id, tau)
+    def set_min_gap(self, veh_id, min_gap):
+        self.kernel_api.vehicle.setMinGap(veh_id, min_gap)
+    def set_sigma(self, veh_id, sigma):
+        self.kernel_api.vehicle.setImperfection(veh_id, sigma)
+    def set_reactionTime(self, veh_id, r_time):
+        self.kernel_api.vehicle.setActionStepLength(veh_id, r_time)
+    def set_leaderDecel(self, veh_id, leaderDecel):
+        self.kernel_api.vehicle.setApparentDecel(veh_id, leaderDecel)
 
     def get_accel(self, veh_id, noise=True, failsafe=True):
         """See parent class."""
